@@ -2,7 +2,7 @@
 
 [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)
 
-Dans le cadre de ma formation j'ai du développer un Ver
+Dans le cadre de ma formation j'ai du développer un ver
 
 le but du Ver informatique et de se reproduit sur plusieurs ordinateurs en utilisant un réseau informatique. 
 
@@ -29,13 +29,13 @@ Il faut executer le fichier ver.py et avoir un dossier test ou le vers pourras c
 
 ## Démarrage
 
-Pour lancer le logiciel il faut juste taper *Python3 virus.py* sur la machine a infecter
+Pour lancer le logiciel il faut juste taper *Python3 ver.py* sur la machine a infecter
 
 
 ## Explication du code 
 
 
-* _Pour_ _virus.py_ :
+* _Pour_ _ver.py_ :
 
 --------------------------Les imports---------------------
 
@@ -52,7 +52,7 @@ time permet fournir différentes fonctions liées au temps
 webbrowser permet d'intéragir avec les navigateurs web 
 
 
-----------------------Traitement ------------------------
+----------------------Traitement------------------------
 
 Tout d'abords nous avons des commentaires # VIRUS SAYS HI! et # VIRUS SAYS BYE! qui sont utile pour délimité les parties du code pour la réplication
 
